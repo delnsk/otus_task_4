@@ -1,0 +1,20 @@
+---
+description: Архитектурный контекст проекта LangChain Task Manager Agent — читать перед любыми изменениями в коде
+alwaysApply: true
+---
+
+# Архитектура проекта
+
+Перед любыми изменениями в коде прочитай `docs/architecture.md`.
+
+## Ключевые правила
+
+- **Два сервиса:** `api/server.py` (FastAPI, порт 8000) и агент (`main.py` + `agent/`). Они не должны смешиваться.
+- **Tools живут в `agent/tools.py`** — каждый tool делает HTTP-запрос через `httpx` к `API_BASE_URL`. Не вызывай функции `api/` напрямую из агента.
+- **Контракт ответа** (`Status / Action / Data / Errors`) определён в `agent/response.py` и `prompts/system.md`. Не меняй формат без обновления обоих файлов.
+- **Переменные окружения** читаются только через `.env` / `os.getenv`. Ключи не хардкодить. `.env` не коммитить.
+- **Docker:** один `Dockerfile`, два сервиса в `docker-compose.yml`. Агент использует `API_BASE_URL=http://api:8000` (hostname сервиса), а не `localhost`.
+
+## Если меняешь структуру
+
+Обнови `docs/architecture.md`: структуру файлов, диаграмму или раздел ADR.
